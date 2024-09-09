@@ -48,3 +48,12 @@
 //= require flot_graph
 //= require statistics_tab_manager
 //= require blacklight_gallery/default
+
+
+$(document).ready(function($) {
+    console.log("Find iframe and replace http by https");
+    $("iframe").each(function() {
+        var $frame = $(this)
+        $frame.attr('src', $frame.attr('src').replace('http:', 'https:'))
+    });
+});

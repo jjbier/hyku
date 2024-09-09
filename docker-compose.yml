@@ -1,4 +1,3 @@
-version: '3.8'
 x-app: &app
   build:
     context: .
@@ -18,8 +17,6 @@ x-app: &app
     - assets:/app/samvera/hyrax-webapp/public/assets:cached
     - cache:/app/samvera/hyrax-webapp/tmp/cache:cached
     - .:/app/samvera/hyrax-webapp
-  networks:
-    internal:
 
 volumes:
   assets:
@@ -33,8 +30,6 @@ volumes:
   zk:
   zoo:
 
-networks:
-  internal:
 
 services:
   zoo:
@@ -46,8 +41,6 @@ services:
     volumes:
       - zoo:/data
       - zk:/datalog
-    networks:
-      internal:
     healthcheck:
       test: ["CMD-SHELL", "echo 'ruok' | nc -w 2 -q 2 localhost 2181 | grep imok || exit 1"]
       interval: "10s"
@@ -79,8 +72,6 @@ services:
       - 8983
     volumes:
       - solr:/var/solr
-    networks:
-      internal:
     healthcheck:
       test: curl -sf http://$$SOLR_ADMIN_USER:$$SOLR_ADMIN_PASSWORD@solr:8983/solr/admin/cores?action=STATUS || exit 1
       start_period: 3s
@@ -103,8 +94,6 @@ services:
       - JAVA_OPTS=${JAVA_OPTS} -Dfcrepo.modeshape.configuration="classpath:/config/file-simple/repository.json" -Dfcrepo.object.directory="/data/objects" -Dfcrepo.binary.directory="/data/binaries"
     expose:
       - 8080
-    networks:
-      internal:
 
   db:
     image: postgres:11.1
@@ -118,8 +107,8 @@ services:
       - VIRTUAL_HOST=db.hyku.test
     volumes:
       - db:/var/lib/postgresql/data
-    networks:
-      internal:
+#    networks:
+#      internal:
 
   # Used exclusively for building and caching the base image to reduce build times
   base:
@@ -159,8 +148,8 @@ services:
         condition: service_started
       initialize_app:
         condition: service_completed_successfully
-    # ports:
-    #   - 3000:3000
+#     ports:
+#       - 3000:3000
     expose:
       - 3000
 
@@ -232,8 +221,8 @@ services:
     command: redis-server
     volumes:
       - redis:/data
-    networks:
-      internal:
+#    networks:
+#      internal:
 
   chrome:
     # password is 'secret'
@@ -243,8 +232,6 @@ services:
     volumes:
       - /dev/shm:/dev/shm
     shm_size: 3G
-    networks:
-      internal:
     environment:
       - JAVA_OPTS=-Dwebdriver.chrome.whitelistedIps=
       - VIRTUAL_PORT=7900
